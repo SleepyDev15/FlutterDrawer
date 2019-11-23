@@ -1,70 +1,72 @@
+import 'package:english_words/english_words.dart' as prefix0;
 import 'package:flutter/material.dart';
+import 'package:english_words/english_words.dart';
 
-void main() => runApp(DrawerOnly());
+void main() => runApp(MyApp());
 
-class DrawerOnly extends StatelessWidget {
-  // This widget is the root of your application.
+class MyApp extends StatelessWidget {
   @override
-  Widget build(BuildContext ctxt) {
-    return new Drawer(
-        child: new ListView(
-          children: <Widget>[
-            new DrawerHeader(
-              child: new Text("Drawer Header"),
-              decoration: new BoxDecoration(
-                  color: Colors.orange
-              ),
-            ),
-            new ListTile(
-              title: new Text("Item => 1"),
-              onTap: () {
-                Navigator.pop(ctxt);
-                Navigator.push(ctxt,
-                    new MaterialPageRoute(builder: (ctxt) => new FirstPage()));
-              },
-            ),
-            new ListTile(
-              title: new Text("Item => 2"),
-              onTap: () {
-                Navigator.pop(ctxt);
-                Navigator.push(ctxt,
-                    new MaterialPageRoute(builder: (ctxt) => new SecondPage()));
-              },
-            ),
-          ],
-        )
-    );
-  }
-}
-class DWidget extends StatelessWidget {
-  @override
-  Widget build (BuildContext ctxt) {
-    return new Scaffold(
-      drawer: new DrawerOnly(),   // New Line
-      appBar: new AppBar(
-        title: new Text("Drawer Demo"),
+  Widget build(BuildContext context) {
+    //final wordPair = WordPair.random();
+    return MaterialApp(
+      title: 'Startup Name Generator',
+      theme: ThemeData(
+        primarySwatch: Colors.amber,
       ),
-      body: new Text("Drawer Body"),
+      home: RandomWords(),
     );
   }
 }
-class FirstPage extends StatelessWidget {
+class RandomWords extends StatefulWidget {
   @override
-  Widget build(BuildContext ctxt) {
-    return new Scaffold(
-      drawer: new DrawerOnly(),    // new Line
-      appBar: new AppBar(title: new Text("First Page"),),
-      body: new Text("I belongs to First Page"),
-    );
-  }
+  RandomWordsState createState() => new RandomWordsState();
 }
-class SecondPage extends StatelessWidget {
+
+class RandomWordsState extends State<RandomWords> {
+
+    final List<WordPair> _suggestions = <WordPair>[];
+    final TextStyle _biggerFont = const TextStyle(
+      fontSize: 16,
+      fontStyle: FontStyle.normal,
+      color: Colors.blue
+    );
+
+    Widget _buildSuggestions(){
+      return ListView.builder(
+        padding: const EdgeInsets.all(8.0),
+        itemBuilder: (context, i) {
+          if (i.isOdd)
+            return Divider();
+
+          final index = i ~/ 2;
+          if (index >= _suggestions.length) {
+            _suggestions.addAll(generateWordPairs().take(10));
+          }
+          return _buildRow(_suggestions[index]);
+        });
+    }
+
+    Widget _buildRow(WordPair pair){
+      return ListTile(
+        title: Text(
+          pair.asPascalCase,
+          style: _biggerFont,
+        ),
+      );
+  }
+
   @override
-  Widget build(BuildContext ctxt) {
-    return new Scaffold(
-      drawer: new DrawerOnly(),    // New Line
-      appBar: new AppBar(title: new Text("Second Page"),),
-      body: new Text("I belongs to Second Page"),
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(
+          'Startup Name Generator',
+              style: TextStyle(
+            color: Colors.black, fontWeight: FontWeight.normal
+        ),
+        ),
+      ),
+      body: _buildSuggestions(),
     );
   }
 }
